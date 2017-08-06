@@ -5,7 +5,7 @@ if  [[ "$(which jq)" = "" ]]; then
     apt-get update
     apt-get install -y jq
 fi
-BASEDIR=/srv/docker/buildpack-deps/
+BASEDIR="${BASEDIR:-/srv/docker/buildpack-deps/}"
 REPO=buildpack-deps
 # Always remove and refresh
 [[ -d  $BASEDIR/$REPO ]] &&  \
