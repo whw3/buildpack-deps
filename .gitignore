@@ -2,3 +2,5 @@
 buildpack-deps
 s6*
 Dockerfile
+*.json
+

@@ -21,9 +21,9 @@ sed -i 's/^RUN apt-get update \&\& apt-get install/RUN apt-get update \&\& apt-g
 find . -name Dockerfile -exec sed -i 's_FROM buildpack-deps:jessie_FROM whw3/buildpack-deps:rpi_' {} +
 ### build ###
 cd ./curl
-docker build -t whw3/buildpack-deps:rpi-curl .
+docker build -t whw3/buildpack-deps:rpi-curl -t whw3/buildpack-deps:curl .
 cd ../scm
-docker build -t whw3/buildpack-deps:rpi-scm .
+docker build -t whw3/buildpack-deps:rpi-scm -t whw3/buildpack-deps:scm .
 cd ..
 docker build -t whw3/buildpack-deps:rpi .
 
@@ -43,8 +43,13 @@ do
     cat << EOF > Dockerfile
 FROM whw3/buildpack-deps:rpi$tag
 ADD s6-overlay-$S6_VERSION-armhf.tar.gz /
+COPY 01-docker-entrypoint.sh /etc/cont-init.d
+RUN chmod +x /etc/cont-init.d/01-docker-entrypoint.sh
 ENTRYPOINT ["/init"]
 EOF
-    docker build -t whw3/buildpack-deps:rpi-s6$tag .
+    _tag=${tag//-/}
+    _tag="$_tag-s6"
+    [[ -z $tag ]] && _tag="latest"
+    docker build -t whw3/buildpack-deps:rpi-s6$tag -t whw3/buildpack-deps:$_tag .
 done
 rm Dockerfile
